@@ -1,0 +1,1 @@
+{"transactions": [{"type": "Income", "amount": 10000.0, "date": "2024-07-08 12:21:28"}, {"type": "Expense", "amount": 100.0, "category": "3", "date": "2024-07-08 12:21:33"}], "balance": 9900.0}

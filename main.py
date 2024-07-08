@@ -1,6 +1,5 @@
-# Version 3: Data Persistence with JSON
-
 import json
+import os
 from datetime import datetime
 
 TRANSACTIONS_FILE = "budget_transactions.json"
@@ -13,12 +12,25 @@ class BudgetTracker:
         self.load_transactions()
 
     def load_transactions(self):
-        if not json.exists(TRANSACTIONS_FILE):
-            return
-        with open(TRANSACTIONS_FILE, "r") as file:
-            transactions_data = json.load(file)
-        self.transactions = transactions_data["transactions"]
-        self.balance = transactions_data["balance"]
+        try:
+            with open(TRANSACTIONS_FILE, "r") as file:
+                # Check if the file is empty
+                file_content = file.read()
+                if not file_content:
+                    # Initialize an empty list or dictionary if the file is empty
+                    self.transactions = []
+                else:
+                    # If the file is not empty, load the JSON data
+                    self.transactions = json.loads(file_content)
+        except FileNotFoundError:
+            # If the file does not exist, initialize an empty list or dictionary
+            self.transactions = []
+        except json.JSONDecodeError:
+            # Handle other JSON errors (e.g., corrupted file)
+            print(
+                "Error decoding JSON from transactions file. Initializing empty transactions list."
+            )
+            self.transactions = []
 
     def save_transactions(self):
         transactions_data = {"transactions": self.transactions, "balance": self.balance}
