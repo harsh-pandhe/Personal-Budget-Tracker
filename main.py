@@ -1,20 +1,41 @@
+# Version 3: Data Persistence with JSON
+
+import json
 from datetime import datetime
+
+TRANSACTIONS_FILE = "budget_transactions.json"
 
 
 class BudgetTracker:
     def __init__(self):
         self.balance = 0
         self.transactions = []
+        self.load_transactions()
+
+    def load_transactions(self):
+        if not json.exists(TRANSACTIONS_FILE):
+            return
+        with open(TRANSACTIONS_FILE, "r") as file:
+            transactions_data = json.load(file)
+        self.transactions = transactions_data["transactions"]
+        self.balance = transactions_data["balance"]
+
+    def save_transactions(self):
+        transactions_data = {"transactions": self.transactions, "balance": self.balance}
+        with open(TRANSACTIONS_FILE, "w") as file:
+            json.dump(transactions_data, file)
 
     def add_income(self, amount, date=None):
         self.balance += amount
         self.transactions.append({"type": "Income", "amount": amount, "date": date})
+        self.save_transactions()
 
     def add_expense(self, amount, category, date=None):
         self.balance -= amount
         self.transactions.append(
             {"type": "Expense", "amount": amount, "category": category, "date": date}
         )
+        self.save_transactions()
 
     def view_balance(self):
         print(f"Your current balance is: ${self.balance:.2f}")
@@ -33,7 +54,7 @@ def main():
     tracker = BudgetTracker()
 
     while True:
-        print("\nPersonal Budget Tracker - Version 2")
+        print("\nPersonal Budget Tracker - Version 3")
         print("1. Add Income")
         print("2. Add Expense")
         print("3. View Balance")
